@@ -1,11 +1,7 @@
 export default {
   providers: [
     {
-      domain: `https://${process.env.CLERK_HOSTNAME}`,
-      applicationID: "convex",
-    },
-    {
-      domain: `https://clerk.${process.env.CLERK_HOSTNAME}`,
+      domain: "https://absolute-basilisk-26.clerk.accounts.dev",
       applicationID: "convex",
     },
   ],
