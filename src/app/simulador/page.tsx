@@ -109,7 +109,7 @@ export default function SimuladorPage() {
                             <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Grupo</span>
                             <span className="text-3xl font-black italic group-hover:text-primary transition-colors">{g}</span>
                             <div className="flex -space-x-2 mt-2">
-                                {allTeams.filter(t => t.group === g).map(t => (
+                                {allTeams.filter((t: any) => t.group === g).map((t: any) => (
                                     <img key={t._id} src={t.flag} className="w-6 h-4 rounded-sm border border-black shadow-sm" alt="" />
                                 ))}
                             </div>
