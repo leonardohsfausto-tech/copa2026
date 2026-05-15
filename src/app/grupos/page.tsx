@@ -16,7 +16,7 @@ export default function GruposPage() {
   const activeGroup = GROUPS[activeGroupIndex];
   
   const teams = useQuery(api.teams.getByGroup, { group: activeGroup });
-  const bestThirds = useQuery(api.teams.getBestThirds) || [];
+  const bestThirds = useQuery(api.teams.getBestThirds, {}) || [];
   const qualifiedThirdsIds = new Set(bestThirds.slice(0, 8).map(t => t._id));
 
   const nextGroup = () => setActiveGroupIndex((prev) => (prev + 1) % GROUPS.length);

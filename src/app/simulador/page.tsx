@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
 export default function SimuladorPage() {
-  const allTeams = useQuery(api.teams.list);
+  const allTeams = useQuery(api.teams.list, {});
   const allMatches = useQuery(api.matches.list, { phase: "Group" });
 
   if (!allTeams || !allMatches) {

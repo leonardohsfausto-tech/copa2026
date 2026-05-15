@@ -82,3 +82,40 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Clerk Overrides para botões lado a lado e tema dark */
+.cl-rootBox {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.cl-card {
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+
+.cl-socialButtonsBlockMain {
+  display: flex !important;
+  flex-direction: row !important;
+  gap: 12px !important;
+  flex-wrap: nowrap !important;
+}
+
+.cl-socialButtonsBlockButton {
+  flex: 1 !important;
+  width: 100% !important;
+}
+
+.cl-socialButtonsProviderIcon {
+  width: 20px !important;
+  height: 20px !important;
+}
+
+.cl-headerTitle, .cl-headerSubtitle, .cl-dividerText, .cl-socialButtonsBlockButtonText {
+  color: white !important;
+}
+
+.cl-footerActionText, .cl-footerActionLink {
+  display: none !important;
+}

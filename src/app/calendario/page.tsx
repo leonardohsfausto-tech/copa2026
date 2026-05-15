@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { MatchEditDialog } from "@/components/match-edit-dialog";
 
 export default function CalendarioPage() {
-  const matches = useQuery(api.matches.list);
+  const matches = useQuery(api.matches.list, {});
   const [activeDateIndex, setActiveDateIndex] = useState(0);
 
   if (!matches) {

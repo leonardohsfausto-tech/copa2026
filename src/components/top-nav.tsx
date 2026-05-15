@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { LayoutGrid, CalendarDays, Trophy, Database, AlertTriangle, Loader2, CheckCircle2, User } from "lucide-react";
-import { ClerkProvider, SignInButton, SignUpButton, Show, UserButton } from "@clerk/nextjs";
+import { SignInButton, SignUpButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import { useState } from "react";
 import { useMutation } from "convex/react";
 import { api } from "../../convex/_generated/api";
@@ -43,15 +43,15 @@ export function TopNav() {
         </div>
         
         <div className="md:absolute md:right-10 md:top-6 flex items-center gap-4">
-            <Show when="signed-out">
+            <SignedOut>
               <SignInButton mode="modal">
                 <button className="flex items-center gap-2 px-3 py-1.5 bg-white/10 hover:bg-white/20 rounded-lg transition-all text-white border border-white/10 backdrop-blur-sm cursor-pointer text-[10px] font-black uppercase tracking-widest">
                   <User size={14} />
                   Login
                 </button>
               </SignInButton>
-            </Show>
-            <Show when="signed-in">
+            </SignedOut>
+            <SignedIn>
               <div className="flex items-center gap-3">
                 <SeedButton />
                 <UserButton 
@@ -62,7 +62,7 @@ export function TopNav() {
                   }}
                 />
               </div>
-            </Show>
+            </SignedIn>
         </div>
       </div>
 
@@ -127,14 +127,14 @@ function SeedButton() {
                     Todos os placares atuais serão perdidos e a competição voltará ao início. Deseja continuar?
                 </AlertDialogDescription>
             </AlertDialogHeader>
-            <AlertDialogFooter className="sm:justify-center gap-3">
-                <AlertDialogCancel className="rounded-xl font-black uppercase text-[10px] tracking-widest border-border bg-white/5 hover:bg-white/10 w-32 h-11">CANCELAR</AlertDialogCancel>
+            <AlertDialogFooter className="flex flex-row items-center justify-center gap-3 bg-transparent border-none p-0 sm:p-0 sm:bg-transparent sm:border-none">
+                <AlertDialogCancel className="flex-1 rounded-xl font-black uppercase text-[10px] tracking-widest border-border bg-white/5 hover:bg-white/10 h-11 m-0">CANCELAR</AlertDialogCancel>
                 <AlertDialogAction 
                     onClick={(e) => {
-                        e.preventDefault(); // Evita o comportamento padrão para controlar via estado
+                        e.preventDefault();
                         handleSeed();
                     }}
-                    className="rounded-xl font-black uppercase text-[10px] tracking-widest bg-red-600 hover:bg-red-700 text-white border-none w-32 h-11 shadow-[0_5px_15px_rgba(220,38,38,0.3)]"
+                    className="flex-1 rounded-xl font-black uppercase text-[10px] tracking-widest bg-red-600 hover:bg-red-700 text-white border-none h-11 shadow-[0_5px_15px_rgba(220,38,38,0.3)] m-0"
                 >
                     SIM, RESETAR
                 </AlertDialogAction>

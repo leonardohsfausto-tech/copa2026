@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
 export default function FavoritosPage() {
-  const teams = useQuery(api.teams.list);
+  const teams = useQuery(api.teams.list, {});
   const toggleFavorite = useMutation(api.teams.toggleFavorite);
 
   if (!teams) {
