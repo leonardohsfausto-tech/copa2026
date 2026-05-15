@@ -2,9 +2,13 @@ import { mutation } from "./_generated/server";
 import { v } from "convex/values";
 
 // Função utilitária interna para recálculo
-async function runRecalculate(ctx: any, group: string) {
-  const teams = await ctx.db.query("teams").filter((q: any) => q.eq(q.field("group"), group)).collect();
-  const matches = await ctx.db.query("matches").filter((q: any) => q.and(q.eq(q.field("group"), group), q.eq(q.field("phase"), "Group"))).collect();
+async function runRecalculate(ctx: any, group: string, userId: string) {
+  const teams = await ctx.db.query("teams")
+    .withIndex("by_user", (q: any) => q.eq("userId", userId))
+    .filter((q: any) => q.eq(q.field("group"), group)).collect();
+  const matches = await ctx.db.query("matches")
+    .withIndex("by_user", (q: any) => q.eq("userId", userId))
+    .filter((q: any) => q.and(q.eq(q.field("group"), group), q.eq(q.field("phase"), "Group"))).collect();
 
   const stats: Record<string, any> = {};
   teams.forEach((t: any) => {
@@ -68,9 +72,12 @@ async function runRecalculate(ctx: any, group: string) {
 
 export const fixAllStandings = mutation({
   handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity();
+    const userId = identity?.subject || "default_user";
+
     const GROUPS = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L"];
     for (const g of GROUPS) {
-      await runRecalculate(ctx, g);
+      await runRecalculate(ctx, g, userId);
     }
   }
 });

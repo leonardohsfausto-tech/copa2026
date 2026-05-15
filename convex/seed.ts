@@ -4,9 +4,18 @@ import { v } from "convex/values";
 export const seed = mutation({
   args: {},
   handler: async (ctx: any) => {
-    console.log("Iniciando Seed...");
-    const existingTeams = await ctx.db.query("teams").collect();
-    const existingMatches = await ctx.db.query("matches").collect();
+    const identity = await ctx.auth.getUserIdentity();
+    const userId = identity?.subject || "default_user";
+
+    console.log(`Iniciando Seed para usuário: ${userId}...`);
+    
+    const existingTeams = await ctx.db.query("teams")
+      .withIndex("by_user", (q: any) => q.eq("userId", userId))
+      .collect();
+    const existingMatches = await ctx.db.query("matches")
+      .withIndex("by_user", (q: any) => q.eq("userId", userId))
+      .collect();
+    
     console.log(`Deletando ${existingTeams.length} times e ${existingMatches.length} partidas...`);
     for (const team of existingTeams) await ctx.db.delete(team._id);
     for (const match of existingMatches) await ctx.db.delete(match._id);
@@ -32,6 +41,7 @@ export const seed = mutation({
       teamIds[group] = [];
       for (const teamName of teams) {
         const id = await ctx.db.insert("teams", {
+          userId,
           name: teamName,
           group,
           flag: `https://flagcdn.com/w80/${getCountryCode(teamName)}.png`,
@@ -158,6 +168,7 @@ export const seed = mutation({
     for (const m of matchData) {
       const v = stadiums[m.c];
       await ctx.db.insert("matches", {
+        userId,
         group: m.g, phase: "Group", homeTeamId: nameToId[m.h], awayTeamId: nameToId[m.a],
         date: m.d, time: m.t, stadium: v.name, city: m.c, country: v.country, status: "agendado",
       });
@@ -206,6 +217,7 @@ export const seed = mutation({
     for (const m of knockout) {
       const v = stadiums[m.c];
       await ctx.db.insert("matches", {
+        userId,
         group: "Knockout", phase: m.ph, homeTeamPlaceholder: m.h, awayTeamPlaceholder: m.a,
         date: m.d, time: m.t, stadium: v.name, city: m.c, country: v.country, status: "agendado",
       });

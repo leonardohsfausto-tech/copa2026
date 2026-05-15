@@ -7,8 +7,12 @@ export const list = query({
     group: v.optional(v.string()),
     phase: v.optional(v.string())
   },
-  handler: async (ctx: QueryCtx, args: { group?: string, phase?: string }) => {
-    let matchesQuery = ctx.db.query("matches");
+  handler: async (ctx: any, args: { group?: string, phase?: string }) => {
+    const identity = await ctx.auth.getUserIdentity();
+    const userId = identity?.subject || "default_user";
+
+    let matchesQuery = ctx.db.query("matches")
+      .withIndex("by_user", (q: any) => q.eq("userId", userId));
     
     if (args.phase) {
       matchesQuery = matchesQuery.filter((q: any) => q.eq(q.field("phase"), args.phase));
@@ -19,7 +23,7 @@ export const list = query({
     const matches = await matchesQuery.collect();
     
     return await Promise.all(
-      matches.map(async (match) => {
+      matches.map(async (match: any) => {
         const homeTeam = match.homeTeamId ? await ctx.db.get(match.homeTeamId) : null;
         const awayTeam = match.awayTeamId ? await ctx.db.get(match.awayTeamId) : null;
         return { ...match, homeTeam, awayTeam };
@@ -42,6 +46,14 @@ export const updateScore = mutation({
     status: v.string(), 
     winnerId: v.optional(v.id("teams")),
   },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new Error("Não autorizado");
+    const userId = identity.subject;
+
+    const match = await ctx.db.get(args.matchId);
+    if (!match || match.userId !== userId) throw new Error("Partida não encontrada ou acesso negado");
+
     const updatedMatch = {
       ...match,
       homeGoals: args.homeGoals,
@@ -70,17 +82,21 @@ export const updateScore = mutation({
     });
 
     if (match.phase === "Group") {
-      await recalculateStandings(ctx, match.group);
-      await checkAndPopulateR32(ctx);
+      await recalculateStandings(ctx, match.group, userId);
+      await checkAndPopulateR32(ctx, userId);
     } else {
-      await propagateWinner(ctx, updatedMatch);
+      await propagateWinner(ctx, updatedMatch, userId);
     }
   },
 });
 
-async function recalculateStandings(ctx: any, group: string) {
-  const teams = await ctx.db.query("teams").filter((q: any) => q.eq(q.field("group"), group)).collect();
-  const matches = await ctx.db.query("matches").filter((q: any) => q.and(q.eq(q.field("group"), group), q.eq(q.field("phase"), "Group"))).collect();
+async function recalculateStandings(ctx: any, group: string, userId: string) {
+  const teams = await ctx.db.query("teams")
+    .withIndex("by_user", (q: any) => q.eq("userId", userId))
+    .filter((q: any) => q.eq(q.field("group"), group)).collect();
+  const matches = await ctx.db.query("matches")
+    .withIndex("by_user", (q: any) => q.eq("userId", userId))
+    .filter((q: any) => q.and(q.eq(q.field("group"), group), q.eq(q.field("phase"), "Group"))).collect();
 
   const stats: Record<string, any> = {};
   teams.forEach((t: any) => {
@@ -175,15 +191,21 @@ async function recalculateStandings(ctx: any, group: string) {
   }
 }
 
-async function checkAndPopulateR32(ctx: any) {
-  const allGroupMatches = await ctx.db.query("matches").filter((q: any) => q.eq(q.field("phase"), "Group")).collect();
+async function checkAndPopulateR32(ctx: any, userId: string) {
+  const allGroupMatches = await ctx.db.query("matches")
+    .withIndex("by_user", (q: any) => q.eq("userId", userId))
+    .filter((q: any) => q.eq(q.field("phase"), "Group")).collect();
   const finishedMatches = allGroupMatches.filter((m: any) => m.status === "encerrado");
   
   // O Mundial 2026 tem 72 jogos na fase de grupos (12 grupos x 6 jogos)
   if (finishedMatches.length < 72) return;
 
-  const teams = await ctx.db.query("teams").collect();
-  const r32Matches = await ctx.db.query("matches").filter((q: any) => q.eq(q.field("phase"), "R32")).collect();
+  const teams = await ctx.db.query("teams")
+    .withIndex("by_user", (q: any) => q.eq("userId", userId))
+    .collect();
+  const r32Matches = await ctx.db.query("matches")
+    .withIndex("by_user", (q: any) => q.eq("userId", userId))
+    .filter((q: any) => q.eq(q.field("phase"), "R32")).collect();
   
   // 1. Identificar todos os 1º, 2º e 3º de cada grupo
   const groupStats: Record<string, any[]> = {};
@@ -259,10 +281,12 @@ async function checkAndPopulateR32(ctx: any) {
   }
 }
 
-async function propagateWinner(ctx: any, finishedMatch: any) {
+async function propagateWinner(ctx: any, finishedMatch: any, userId: string) {
   if (finishedMatch.status !== "encerrado" || !finishedMatch.winnerId) return;
 
-  const allMatches = await ctx.db.query("matches").collect();
+  const allMatches = await ctx.db.query("matches")
+    .withIndex("by_user", (q: any) => q.eq("userId", userId))
+    .collect();
   
   // Encontrar qual é o índice deste jogo na fase atual para resolver placeholders como "Venc R32-1"
   const samePhaseMatches = allMatches

@@ -69,7 +69,12 @@ export const toggleFavorite = mutation({
 export const getBestThirds = query({
   args: {},
   handler: async (ctx: any) => {
-    const teams = await ctx.db.query("teams").collect();
+    const identity = await ctx.auth.getUserIdentity();
+    const userId = identity?.subject || "default_user";
+    const teams = await ctx.db
+      .query("teams")
+      .withIndex("by_user", (q: any) => q.eq("userId", userId))
+      .collect();
     
     // Agrupa por grupo e pega o 3º colocado de cada
     const groups: Record<string, any[]> = {};
