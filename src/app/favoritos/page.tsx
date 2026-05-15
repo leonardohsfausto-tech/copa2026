@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Star, Loader2, Trophy, Calendar } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 export default function FavoritosPage() {
   const teams = useQuery(api.teams.list, {});
