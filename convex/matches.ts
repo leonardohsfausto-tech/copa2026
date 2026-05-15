@@ -48,7 +48,10 @@ export const updateScore = mutation({
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new Error("Não autorizado");
+    if (!identity) {
+      console.error("Erro de Autenticação: Identity é null. Verifique o JWT Template no Clerk e o Auth Config no Convex.");
+      throw new Error("Não autorizado: Usuário não identificado pelo banco de dados.");
+    }
     const userId = identity.subject;
 
     const match = await ctx.db.get(args.matchId);
