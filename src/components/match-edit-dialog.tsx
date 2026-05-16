@@ -84,17 +84,18 @@ export function MatchEditDialog({ match, isOpen, onClose }: MatchEditDialogProps
                     inputMode="numeric"
                     value={homeGoals}
                     onChange={(e) => setHomeGoals(e.target.value.replace(/\D/g, ""))}
+                    onFocus={(e) => e.target.select()}
                     className="text-center text-4xl font-black h-20 bg-muted/30 border-none ring-1 ring-white/5 focus-visible:ring-primary/50 transition-all w-full shadow-inner"
                 />
                 
                 <div className="grid grid-cols-2 gap-3">
                     <div className="flex flex-col items-center gap-1.5">
                         <Label className="text-[7px] font-black text-amber-500 uppercase tracking-widest">Amarelo</Label>
-                        <Input value={homeYellow} onChange={e => setHomeYellow(e.target.value.replace(/\D/g,""))} className="h-10 text-center text-xs font-black bg-muted/20 border-none ring-1 ring-white/5 w-full" />
+                        <Input value={homeYellow} onChange={e => setHomeYellow(e.target.value.replace(/\D/g,""))} onFocus={e => e.target.select()} className="h-10 text-center text-xs font-black bg-muted/20 border-none ring-1 ring-white/5 w-full" />
                     </div>
                     <div className="flex flex-col items-center gap-1.5">
                         <Label className="text-[7px] font-black text-red-500 uppercase tracking-widest">Vermelho</Label>
-                        <Input value={homeRed} onChange={e => setHomeRed(e.target.value.replace(/\D/g,""))} className="h-10 text-center text-xs font-black bg-muted/20 border-none ring-1 ring-white/5 w-full" />
+                        <Input value={homeRed} onChange={e => setHomeRed(e.target.value.replace(/\D/g,""))} onFocus={e => e.target.select()} className="h-10 text-center text-xs font-black bg-muted/20 border-none ring-1 ring-white/5 w-full" />
                     </div>
                 </div>
               </div>
@@ -114,17 +115,18 @@ export function MatchEditDialog({ match, isOpen, onClose }: MatchEditDialogProps
                     inputMode="numeric"
                     value={awayGoals}
                     onChange={(e) => setAwayGoals(e.target.value.replace(/\D/g, ""))}
+                    onFocus={(e) => e.target.select()}
                     className="text-center text-4xl font-black h-20 bg-muted/30 border-none ring-1 ring-white/5 focus-visible:ring-primary/50 transition-all w-full shadow-inner"
                 />
 
                 <div className="grid grid-cols-2 gap-3">
                     <div className="flex flex-col items-center gap-1.5">
                         <Label className="text-[7px] font-black text-amber-500 uppercase tracking-widest">Amarelo</Label>
-                        <Input value={awayYellow} onChange={e => setAwayYellow(e.target.value.replace(/\D/g,""))} className="h-10 text-center text-xs font-black bg-muted/20 border-none ring-1 ring-white/5 w-full" />
+                        <Input value={awayYellow} onChange={e => setAwayYellow(e.target.value.replace(/\D/g,""))} onFocus={e => e.target.select()} className="h-10 text-center text-xs font-black bg-muted/20 border-none ring-1 ring-white/5 w-full" />
                     </div>
                     <div className="flex flex-col items-center gap-1.5">
                         <Label className="text-[7px] font-black text-red-500 uppercase tracking-widest">Vermelho</Label>
-                        <Input value={awayRed} onChange={e => setAwayRed(e.target.value.replace(/\D/g,""))} className="h-10 text-center text-xs font-black bg-muted/20 border-none ring-1 ring-white/5 w-full" />
+                        <Input value={awayRed} onChange={e => setAwayRed(e.target.value.replace(/\D/g,""))} onFocus={e => e.target.select()} className="h-10 text-center text-xs font-black bg-muted/20 border-none ring-1 ring-white/5 w-full" />
                     </div>
                 </div>
               </div>
