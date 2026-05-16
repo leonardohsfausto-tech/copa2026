@@ -66,12 +66,21 @@ export default function RootLayout({
               colorTextSecondary: "#a1a1aa",
             },
             elements: {
+              modalBackdrop: "bg-black/70 backdrop-blur-sm",
+              modalContent: "!bg-[#111111]",
               rootBox: "flex justify-center items-center w-full h-full",
               card: "!bg-[#111111] shadow-2xl w-full max-w-[400px] mx-auto rounded-2xl border border-white/10",
+              cardBox: "!bg-[#111111]",
+              header: "!bg-[#111111]",
+              main: "!bg-[#111111]",
+              footer: "!bg-[#111111] border-t border-white/5",
+              footerAction: "!bg-[#111111]",
               socialButtonsBlockMain: "flex flex-row gap-3 flex-nowrap",
-              socialButtonsBlockButton: "flex-1 min-h-[44px] border-white/10",
+              socialButtonsBlockButton: "flex-1 min-h-[44px] border-white/10 !bg-white/5 hover:!bg-white/10",
               socialButtonsProviderIcon: "w-5 h-5",
-              footer: "hidden",
+              formFieldInput: "!bg-white/5 border-white/10",
+              identityPreview: "!bg-white/5 border-white/10",
+              alternativeMethodsBlockButton: "!bg-white/5 border-white/10",
             }
           }}
         >
