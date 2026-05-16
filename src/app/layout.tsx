@@ -67,7 +67,7 @@ export default function RootLayout({
             },
             elements: {
               rootBox: "flex justify-center items-center w-full h-full",
-              card: "bg-transparent shadow-none w-full max-w-[400px] mx-auto",
+              card: "!bg-[#111111] shadow-2xl w-full max-w-[400px] mx-auto rounded-2xl border border-white/10",
               socialButtonsBlockMain: "flex flex-row gap-3 flex-nowrap",
               socialButtonsBlockButton: "flex-1 min-h-[44px] border-white/10",
               socialButtonsProviderIcon: "w-5 h-5",
