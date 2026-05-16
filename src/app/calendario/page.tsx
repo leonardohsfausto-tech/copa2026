@@ -111,18 +111,33 @@ function CalendarMatchCard({ match }: { match: any }) {
 
   const isKnockout = match.phase !== "Group";
 
+  // Mapeamento de estilos por fase para consistência com o mata-mata
+  const phaseStyles: Record<string, { border: string, bg: string, badge: string }> = {
+    R32: { border: "border-blue-500/20", bg: "bg-blue-500/5", badge: "bg-blue-500/20 text-blue-500" },
+    R16: { border: "border-amber-500/20", bg: "bg-amber-500/5", badge: "bg-amber-500/20 text-amber-500" },
+    Quarter: { border: "border-purple-500/20", bg: "bg-purple-500/5", badge: "bg-purple-500/20 text-purple-500" },
+    Semi: { border: "border-rose-500/20", bg: "bg-rose-500/5", badge: "bg-rose-500/20 text-rose-500" },
+    "3rdPlace": { border: "border-slate-500/20", bg: "bg-slate-500/5", badge: "bg-slate-500/20 text-slate-400" },
+    Final: { border: "border-yellow-500/20", bg: "bg-yellow-500/5", badge: "bg-yellow-500/20 text-yellow-500" },
+    Group: { border: "border-border/40", bg: "bg-card/30", badge: "bg-primary/20 text-primary" }
+  };
+
+  const style = phaseStyles[match.phase] || phaseStyles.Group;
+
   return (
     <>
         <Card className={cn(
-        "bg-card/30 border-border/40 hover:border-primary/40 hover:bg-card/50 transition-all group overflow-hidden shadow-2xl backdrop-blur-md",
-        isKnockout && "border-amber-500/10 bg-amber-500/5"
-        )}>
+        "transition-all group overflow-hidden shadow-2xl backdrop-blur-md",
+        style.bg,
+        style.border,
+        "hover:border-primary/40 hover:bg-card/50"
+    )}>
         <CardContent className="p-0">
             <div className="p-3 md:p-5 border-b border-border/10 bg-white/[0.02] flex justify-between items-center">
                 <div className="flex items-center gap-2 md:gap-3 text-[8px] md:text-[10px] font-black uppercase tracking-widest text-muted-foreground/80">
                     <Badge className={cn(
                         "border-none rounded-sm px-2 md:px-3 py-0.5 h-4 md:h-5 flex items-center text-[8px] md:text-[9px]",
-                        isKnockout ? "bg-amber-500/20 text-amber-500" : "bg-primary/20 text-primary"
+                        style.badge
                     )}>
                         {isKnockout && <Trophy size={8} className="mr-1 md:mr-1.5" />}
                         {getPhaseName(match.phase)}
