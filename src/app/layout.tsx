@@ -1,10 +1,11 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter, Outfit } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ConvexClientProvider } from "@/components/convex-provider";
 import { TopNav } from "@/components/top-nav";
 import { ClerkProvider } from "@clerk/nextjs";
+import { PwaRegister } from "@/components/pwa-register";
 
 import { ptBR } from "@clerk/localizations";
 import { dark } from "@clerk/themes";
@@ -19,9 +20,19 @@ const inter = Inter({
   variable: "--font-inter",
 });
 
+export const viewport: Viewport = {
+  themeColor: "#111111",
+};
+
 export const metadata: Metadata = {
   title: "Copa do Mundo 2026 - Simulador Pro",
   description: "Acompanhe, simule e gerencie seus palpites para a Copa do Mundo 2026. O simulador definitivo com dados em tempo real e interface premium.",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Copa 2026",
+  },
   openGraph: {
     title: "Copa do Mundo 2026 - Simulador Pro",
     description: "O simulador definitivo para a maior Copa de todos os tempos.",
@@ -91,6 +102,7 @@ export default function RootLayout({
               enableSystem
               disableTransitionOnChange
             >
+              <PwaRegister />
               <div className="flex flex-col h-screen overflow-hidden">
                 {/* NAVEGAÇÃO POR ABAS SUPERIORES */}
                 <TopNav />

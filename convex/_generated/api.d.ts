@@ -13,6 +13,7 @@ import type * as fix from "../fix.js";
 import type * as fix_teams from "../fix_teams.js";
 import type * as matches from "../matches.js";
 import type * as seed from "../seed.js";
+import type * as simulations from "../simulations.js";
 import type * as teams from "../teams.js";
 
 import type {
@@ -27,6 +28,7 @@ declare const fullApi: ApiFromModules<{
   fix_teams: typeof fix_teams;
   matches: typeof matches;
   seed: typeof seed;
+  simulations: typeof simulations;
   teams: typeof teams;
 }>;
 

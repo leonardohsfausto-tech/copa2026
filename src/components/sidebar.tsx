@@ -71,7 +71,7 @@ export function Sidebar({ className }: { className?: string }) {
 }
 
 function SeedButton() {
-  const seed = useMutation(api.seed.seed);
+  const seed = useMutation(api.simulations.initialize);
   const [status, setStatus] = useState<"idle" | "loading" | "success">("idle");
 
   const handleSeed = async () => {

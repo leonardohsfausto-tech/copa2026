@@ -10,6 +10,8 @@ import { cn } from "@/lib/utils";
 import { useState, useMemo } from "react";
 import { MatchEditDialog } from "@/components/match-edit-dialog";
 
+
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default function MataMataPage() {
@@ -94,8 +96,11 @@ export default function MataMataPage() {
     <div className="space-y-4 pb-20 min-h-screen bg-background">
       {/* MOBILE TABS */}
       <div className="md:hidden px-4 pt-4">
-        <Tabs defaultValue="R32" value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="w-full bg-muted/20 border border-white/5 h-12 p-1 gap-1">
+
+        <div id="mobile-bracket-content" className="bg-background p-1 rounded-xl">
+            <Tabs defaultValue="R32" value={activeTab} onValueChange={setActiveTab} className="w-full">
+                <TabsList className="w-full bg-muted/20 border border-white/5 h-12 p-1 gap-1">
+
                 {phases.map(p => (
                     <TabsTrigger 
                         key={p.id} 
@@ -113,14 +118,19 @@ export default function MataMataPage() {
                 </TabsContent>
             ))}
         </Tabs>
+        </div>
       </div>
 
       {/* DESKTOP FULL BRACKET */}
-      <div className="hidden md:flex overflow-x-auto min-w-full">
-        <div className="flex gap-8 px-8 py-8 min-w-max">
-            {phases.map((p) => renderPhase(p.id, p.name, p.width, "desktop"))}
+      <div className="hidden md:flex flex-col">
+
+        <div id="desktop-bracket-content" className="overflow-x-auto min-w-full bg-background">
+            <div className="flex gap-8 px-8 py-8 min-w-max">
+                {phases.map((p) => renderPhase(p.id, p.name, p.width, "desktop"))}
+            </div>
         </div>
       </div>
+
     </div>
   );
 }
@@ -169,45 +179,53 @@ function KnockoutMatchCard({ match, color }: { match: any, color: string }) {
                 <span className="truncate max-w-[60px] md:max-w-[80px] text-right">{match.city}</span>
             </div>
 
-            <div className={cn(
-                "flex items-center justify-between gap-2 md:gap-3 px-1.5 md:px-2 py-1.5 md:py-2 rounded bg-muted/30 transition-colors",
-                match.winnerId === match.homeTeamId && "bg-primary/10 ring-1 ring-primary/30"
+
+
+            <div id={`match-card-${match._id}`} className={cn(
+                "flex flex-col gap-1.5 p-1 rounded-lg bg-background",
+                match.phase === "Final" && "border border-yellow-500/20 shadow-[0_0_15px_rgba(234,179,8,0.1)]"
             )}>
-              <div className="flex items-center gap-1.5 md:gap-2 min-w-0">
-                {match.homeTeam ? (
-                  <>
-                    <img src={match.homeTeam.flag} className="w-5 h-3.5 md:w-6 md:h-4 rounded shadow-sm object-cover shrink-0" alt="" />
-                    <span className={cn(
-                        "text-[10px] md:text-xs font-black uppercase truncate w-20 md:w-24",
-                        match.winnerId === match.homeTeamId ? "text-primary" : "text-foreground"
-                    )}>{match.homeTeam.name}</span>
-                  </>
-                ) : (
-                  <span className="text-[8px] md:text-[10px] font-bold text-muted-foreground uppercase italic truncate">{match.homeTeamPlaceholder || "TBD"}</span>
-                )}
-              </div>
-              <span className="text-xs md:text-sm font-black text-primary shrink-0">{match.homeGoals ?? "-"}</span>
+                <div className={cn(
+                    "flex items-center justify-between gap-2 md:gap-3 px-1.5 md:px-2 py-1.5 md:py-2 rounded bg-muted/30 transition-colors",
+                    match.winnerId === match.homeTeamId && "bg-primary/10 ring-1 ring-primary/30"
+                )}>
+                  <div className="flex items-center gap-1.5 md:gap-2 min-w-0">
+                    {match.homeTeam ? (
+                      <>
+                        <img src={match.homeTeam.flag} className="w-5 h-3.5 md:w-6 md:h-4 rounded shadow-sm object-cover shrink-0" alt="" />
+                        <span className={cn(
+                            "text-[10px] md:text-xs font-black uppercase truncate w-20 md:w-24",
+                            match.winnerId === match.homeTeamId ? "text-primary" : "text-foreground"
+                        )}>{match.homeTeam.name}</span>
+                      </>
+                    ) : (
+                      <span className="text-[8px] md:text-[10px] font-bold text-muted-foreground uppercase italic truncate">{match.homeTeamPlaceholder || "TBD"}</span>
+                    )}
+                  </div>
+                  <span className="text-xs md:text-sm font-black text-primary shrink-0">{match.homeGoals ?? "-"}</span>
+                </div>
+                
+                <div className={cn(
+                    "flex items-center justify-between gap-2 md:gap-3 px-1.5 md:px-2 py-1.5 md:py-2 rounded bg-muted/30 transition-colors",
+                    match.winnerId === match.awayTeamId && "bg-primary/10 ring-1 ring-primary/30"
+                )}>
+                   <div className="flex items-center gap-1.5 md:gap-2 min-w-0">
+                    {match.awayTeam ? (
+                      <>
+                        <img src={match.awayTeam.flag} className="w-5 h-3.5 md:w-6 md:h-4 rounded shadow-sm object-cover shrink-0" alt="" />
+                        <span className={cn(
+                            "text-[10px] md:text-xs font-black uppercase truncate w-20 md:w-24",
+                            match.winnerId === match.awayTeamId ? "text-primary" : "text-foreground"
+                        )}>{match.awayTeam.name}</span>
+                      </>
+                    ) : (
+                      <span className="text-[8px] md:text-[10px] font-bold text-muted-foreground uppercase italic truncate">{match.awayTeamPlaceholder || "TBD"}</span>
+                    )}
+                  </div>
+                  <span className="text-xs md:text-sm font-black text-primary shrink-0">{match.awayGoals ?? "-"}</span>
+                </div>
             </div>
-            
-            <div className={cn(
-                "flex items-center justify-between gap-2 md:gap-3 px-1.5 md:px-2 py-1.5 md:py-2 rounded bg-muted/30 transition-colors",
-                match.winnerId === match.awayTeamId && "bg-primary/10 ring-1 ring-primary/30"
-            )}>
-               <div className="flex items-center gap-1.5 md:gap-2 min-w-0">
-                {match.awayTeam ? (
-                  <>
-                    <img src={match.awayTeam.flag} className="w-5 h-3.5 md:w-6 md:h-4 rounded shadow-sm object-cover shrink-0" alt="" />
-                    <span className={cn(
-                        "text-[10px] md:text-xs font-black uppercase truncate w-20 md:w-24",
-                        match.winnerId === match.awayTeamId ? "text-primary" : "text-foreground"
-                    )}>{match.awayTeam.name}</span>
-                  </>
-                ) : (
-                  <span className="text-[8px] md:text-[10px] font-bold text-muted-foreground uppercase italic truncate">{match.awayTeamPlaceholder || "TBD"}</span>
-                )}
-              </div>
-              <span className="text-xs md:text-sm font-black text-primary shrink-0">{match.awayGoals ?? "-"}</span>
-            </div>
+
           </CardContent>
         </Card>
       </motion.div>

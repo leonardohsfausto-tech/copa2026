@@ -91,7 +91,7 @@ export function TopNav() {
 }
 
 function SeedButton() {
-  const seed = useMutation(api.seed.seed);
+  const seed = useMutation(api.simulations.initialize);
   const [status, setStatus] = useState<"idle" | "loading" | "success">("idle");
   const [isOpen, setIsOpen] = useState(false);
 

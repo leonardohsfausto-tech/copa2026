@@ -9,6 +9,8 @@ import { Users, Loader2, ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
+
+
 const GROUPS = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L"];
 
 export default function GruposPage() {
@@ -66,9 +68,12 @@ export default function GruposPage() {
                 <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]" /> 
                 TABELA DE PONTUAÇÃO COMPLETA
             </h2>
+
         </div>
 
-        <Card className="bg-card/40 border-border/60 overflow-hidden shadow-2xl backdrop-blur-md">
+        <div id="group-table-capture" className="bg-background rounded-xl">
+            <Card className="bg-card/40 border-border/60 overflow-hidden shadow-2xl backdrop-blur-md">
+
         <CardContent className="p-0">
             <div className="overflow-x-auto">
             <table className="w-full text-sm">
@@ -116,7 +121,9 @@ export default function GruposPage() {
             </div>
         </CardContent>
         </Card>
+        </div>
       </div>
+
     </div>
   );
 }

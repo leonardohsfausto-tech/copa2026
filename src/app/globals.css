@@ -121,3 +121,30 @@
 .cl-footerActionText, .cl-footerActionLink {
   display: none !important;
 }
+
+/* Custom Scrollbar - Modern & Deep Black */
+/* Forçamos em todos os elementos para garantir que o 'main' e as tabelas recebam o estilo */
+*::-webkit-scrollbar {
+  width: 10px !important;
+  height: 10px !important;
+}
+
+*::-webkit-scrollbar-track {
+  background: #0a0a0a !important;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: #262626 !important;
+  border-radius: 20px !important;
+  border: 2px solid #0a0a0a !important;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: #eab308 !important;
+}
+
+/* For Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #262626 #0a0a0a;
+}

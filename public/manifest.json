@@ -1,11 +1,11 @@
 {
-  "name": "Copa do Mundo 2026",
+  "name": "Copa do Mundo 2026 - Simulador",
   "short_name": "Copa 2026",
-  "description": "Acompanhamento em tempo real da Copa do Mundo 2026",
+  "description": "Simulador e acompanhamento em tempo real da Copa do Mundo 2026",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#000000",
-  "theme_color": "#3b82f6",
+  "background_color": "#111111",
+  "theme_color": "#eab308",
   "icons": [
     {
       "src": "/icon-192x192.png",
@@ -15,7 +15,8 @@
     {
       "src": "/icon-512x512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }

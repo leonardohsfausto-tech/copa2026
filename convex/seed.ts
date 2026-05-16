@@ -4,10 +4,10 @@ import { v } from "convex/values";
 export const seed = mutation({
   args: {},
   handler: async (ctx: any) => {
-    const identity = await ctx.auth.getUserIdentity();
-    const userId = identity?.subject || "default_user";
+    // Definimos userId como "global" para criar o template base
+    const userId = "global";
 
-    console.log(`Iniciando Seed para usuário: ${userId}...`);
+    console.log(`Iniciando Seed para template global...`);
     
     const existingTeams = await ctx.db.query("teams")
       .withIndex("by_user", (q: any) => q.eq("userId", userId))
