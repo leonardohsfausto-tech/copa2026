@@ -54,6 +54,9 @@ export default function RootLayout({
       <body className={`${outfit.variable} ${inter.variable} font-sans antialiased bg-background text-foreground`}>
         <ClerkProvider
           localization={ptBR}
+          afterSignOutUrl="/"
+          signInFallbackRedirectUrl="/"
+          signUpFallbackRedirectUrl="/"
           appearance={{
             baseTheme: dark,
             variables: {

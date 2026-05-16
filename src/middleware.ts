@@ -1,12 +1,9 @@
-import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
+import { clerkMiddleware } from "@clerk/nextjs/server";
 
-const isPublicRoute = createRouteMatcher(["/grupos(.*)", "/"]);
-
-export default clerkMiddleware(async (auth, request) => {
-  if (!isPublicRoute(request)) {
-    await auth.protect();
-  }
-});
+// Todas as rotas são públicas — a autenticação é verificada
+// individualmente nos componentes/mutations que precisam.
+// Isso evita redirects automáticos para o Clerk que causam CORS errors.
+export default clerkMiddleware();
 
 export const config = {
   matcher: [
