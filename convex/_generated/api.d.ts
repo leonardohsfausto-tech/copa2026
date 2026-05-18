@@ -8,10 +8,15 @@
  * @module
  */
 
+import type * as admin from "../admin.js";
+import type * as crons from "../crons.js";
 import type * as debug from "../debug.js";
 import type * as fix from "../fix.js";
 import type * as fix_teams from "../fix_teams.js";
 import type * as matches from "../matches.js";
+import type * as push from "../push.js";
+import type * as pushActions from "../pushActions.js";
+import type * as realMatches from "../realMatches.js";
 import type * as seed from "../seed.js";
 import type * as simulations from "../simulations.js";
 import type * as teams from "../teams.js";
@@ -23,10 +28,15 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  admin: typeof admin;
+  crons: typeof crons;
   debug: typeof debug;
   fix: typeof fix;
   fix_teams: typeof fix_teams;
   matches: typeof matches;
+  push: typeof push;
+  pushActions: typeof pushActions;
+  realMatches: typeof realMatches;
   seed: typeof seed;
   simulations: typeof simulations;
   teams: typeof teams;

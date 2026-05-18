@@ -3,8 +3,8 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { LayoutGrid, CalendarDays, Trophy, Database, AlertTriangle, Loader2, CheckCircle2, User } from "lucide-react";
-import { SignInButton, SignUpButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
+import { LayoutGrid, CalendarDays, Trophy, Database, AlertTriangle, Loader2, CheckCircle2, User, BarChart2, Shield } from "lucide-react";
+import { SignInButton, SignUpButton, SignedIn, SignedOut, UserButton, useUser } from "@clerk/nextjs";
 import { useState } from "react";
 import { useMutation } from "convex/react";
 import { api } from "../../convex/_generated/api";
@@ -22,11 +22,14 @@ import {
 
 export function TopNav() {
   const pathname = usePathname();
+  const { user } = useUser();
+  const isAdmin = user?.primaryEmailAddress?.emailAddress === "leonardohs.fausto@gmail.com";
 
   const tabs = [
     { icon: LayoutGrid, label: "Grupos", href: "/grupos" },
     { icon: CalendarDays, label: "Jogos", href: "/calendario" },
     { icon: Trophy, label: "Mata-Mata", href: "/mata-mata" },
+    { icon: BarChart2, label: "Estatísticas", href: "/estatisticas" },
   ];
 
   return (
@@ -52,7 +55,13 @@ export function TopNav() {
               </SignInButton>
             </SignedOut>
             <SignedIn>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 shrink-0">
+                {isAdmin && (
+                  <Link href="/admin" className="flex items-center gap-2 px-3 py-2 bg-blue-600/35 hover:bg-blue-600/50 rounded-lg transition-all text-blue-200 hover:text-white border border-blue-500/30 backdrop-blur-sm cursor-pointer shadow-[0_0_15px_rgba(37,99,235,0.15)] hover:shadow-[0_0_20px_rgba(37,99,235,0.3)] whitespace-nowrap shrink-0">
+                    <Shield size={13} className="text-blue-400 shrink-0" />
+                    <span className="text-[9px] font-black uppercase tracking-widest whitespace-nowrap">Painel Admin</span>
+                  </Link>
+                )}
                 <SeedButton />
                 <UserButton 
                   appearance={{
@@ -73,6 +82,7 @@ export function TopNav() {
                 <Link
                     key={tab.href}
                     href={tab.href}
+                    title={tab.label}
                     className={cn(
                         "flex-1 flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg transition-all duration-300 font-black uppercase text-[10px] md:text-[11px] tracking-widest",
                         pathname === tab.href 
@@ -80,8 +90,8 @@ export function TopNav() {
                             : "text-white/60 hover:text-white hover:bg-white/5"
                     )}
                 >
-                    <tab.icon size={14} />
-                    <span>{tab.label}</span>
+                    <tab.icon size={14} className="shrink-0" />
+                    <span className="hidden md:inline">{tab.label}</span>
                 </Link>
             ))}
         </div>

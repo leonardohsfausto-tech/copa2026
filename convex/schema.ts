@@ -71,4 +71,22 @@ export default defineSchema({
     userId: v.string(),
     teamId: v.id("teams"),
   }).index("by_user", ["userId"]),
+  match_events: defineTable({
+    userId: v.optional(v.string()), // null para o template global
+    matchId: v.id("matches"),
+    teamId: v.id("teams"),
+    type: v.string(), // "goal", "assist", "yellow_card", "red_card"
+    playerName: v.string(),
+    minute: v.number(),
+  }).index("by_match", ["matchId"])
+    .index("by_user", ["userId"]),
+  push_subscriptions: defineTable({
+    userId: v.optional(v.string()), // Optional, pois usuários deslogados também poderiam receber, mas o saas foca em usuários
+    endpoint: v.string(),
+    keys: v.object({
+      p256dh: v.string(),
+      auth: v.string(),
+    }),
+  }).index("by_user", ["userId"])
+    .index("by_endpoint", ["endpoint"]),
 });

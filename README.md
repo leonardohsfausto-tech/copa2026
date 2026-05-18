@@ -1,36 +1,40 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🏆 Copa do Mundo 2026 - Simulador Pro
 
-## Getting Started
+O simulador definitivo para acompanhar, projetar e gerenciar seus palpites da Copa do Mundo de 2026. Construído com tecnologias web modernas, design premium ("Deep Black") e uma robusta arquitetura multi-tenant (SaaS).
 
-First, run the development server:
+## 🚀 Stack Tecnológica
+
+- **Frontend:** Next.js (App Router), React, Tailwind CSS, Lucide Icons
+- **Backend & Database:** Convex (Backend Real-time e Serverless)
+- **Autenticação:** Clerk (Integrado perfeitamente via JWT template ao Convex)
+- **Interface & Componentes:** Radix UI, componentes inspirados no shadcn/ui
+- **Performance:** Progressive Web App (PWA) completo com service workers e Push Notifications
+
+## 🌟 Funcionalidades de Destaque
+
+1. **Simulador Completo:** Preveja placares da fase de grupos ao mata-mata. A tabela e o chaveamento são atualizados automaticamente com as regras complexas de desempate da FIFA.
+2. **Modelo SaaS Multi-Tenant:** Contas isoladas; as simulações de cada usuário logado são persistidas em tempo real de forma privada e segura.
+3. **PWA & Web Push:** Interface instalável em iOS/Android e disparo em massa de Web Push Notifications para retenção e engajamento.
+4. **Painel Analítico (Admin):** Dashboard exclusivo, restrito à conta mestre (`leonardohs.fausto@gmail.com`), exibindo KPIs de crescimento, retenção e controle de envios Push.
+5. **Motor de Dados Oficiais:** Estrutura pronta (CRON jobs / tabelas globais) para receber dados reais de placares, gols, assistências e cartões durante o torneio de 2026.
+
+## 🛠️ Como Iniciar o Desenvolvimento
+
+Antes de rodar o projeto, certifique-se de que suas chaves do Clerk e Convex estejam configuradas corretamente no arquivo `.env.local`.
 
 ```bash
+# 1. Instale todas as dependências
+npm install
+
+# 2. Inicie o servidor Next.js
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+
+# 3. Em um novo terminal, inicie o servidor de banco de dados do Convex
+npx convex dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Abra [http://localhost:3000](http://localhost:3000) no seu navegador para acessar a plataforma localmente.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 📄 Planejamento e Arquitetura
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Para conferir o status de desenvolvimento de funcionalidades e os próximos passos, acesse o documento central [ROADMAP.md](./ROADMAP.md).

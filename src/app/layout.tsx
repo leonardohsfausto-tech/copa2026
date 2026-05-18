@@ -6,6 +6,7 @@ import { ConvexClientProvider } from "@/components/convex-provider";
 import { TopNav } from "@/components/top-nav";
 import { ClerkProvider } from "@clerk/nextjs";
 import { PwaRegister } from "@/components/pwa-register";
+import { PushModal } from "@/components/PushModal";
 
 import { ptBR } from "@clerk/localizations";
 import { dark } from "@clerk/themes";
@@ -103,6 +104,7 @@ export default function RootLayout({
               disableTransitionOnChange
             >
               <PwaRegister />
+              <PushModal />
               <div className="flex flex-col h-screen overflow-hidden">
                 {/* NAVEGAÇÃO POR ABAS SUPERIORES */}
                 <TopNav />

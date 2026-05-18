@@ -50,6 +50,10 @@ export default function MataMataPage() {
     }
     
     const sortedMatches = matches.sort((a: any, b: any) => {
+      // Forçar Grande Final ("Final") a aparecer no topo e 3º Lugar ("3rdPlace") embaixo
+      if (a.phase === "Final" && b.phase === "3rdPlace") return -1;
+      if (a.phase === "3rdPlace" && b.phase === "Final") return 1;
+
       const parseDateTime = (d: string, t: string) => {
           const [day, month, year] = d.split("/").map(Number);
           const [hour, min] = t.split(":").map(Number);
@@ -73,7 +77,7 @@ export default function MataMataPage() {
                   key={`${view}-${phaseId}-${match._id}`} 
                   match={match}
                   color={
-                    match.phase === "R32" ? (i < 4 ? "border-l-blue-500" : i < 8 ? "border-l-emerald-500" : i < 12 ? "border-l-lime-500" : "border-l-red-500") :
+                    match.phase === "R32" ? "border-l-blue-500" :
                     match.phase === "R16" ? "border-l-amber-500" :
                     match.phase === "Quarter" ? "border-l-purple-500" :
                     match.phase === "Semi" ? "border-l-rose-500" : 
