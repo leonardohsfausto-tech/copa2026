@@ -89,4 +89,10 @@ export default defineSchema({
     }),
   }).index("by_user", ["userId"])
     .index("by_endpoint", ["endpoint"]),
+  api_sync_logs: defineTable({
+    timestamp: v.number(),
+    status: v.string(), // "sucesso" | "erro"
+    message: v.string(),
+    matchesSynced: v.optional(v.number()),
+  }),
 });

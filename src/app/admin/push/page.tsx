@@ -5,15 +5,19 @@ import { useAction } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import { useState } from "react";
 import { redirect } from "next/navigation";
+import Link from "next/link";
+import { ArrowLeft, Bell, Send, User } from "lucide-react";
 
 export default function AdminPushPage() {
   const { user, isLoaded } = useUser();
   const sendNotification = useAction(api.pushActions.sendNotificationToAll);
+  const sendTestNotification = useAction(api.pushActions.sendNotificationToUser);
   
   const [title, setTitle] = useState("A Copa começou!");
   const [body, setBody] = useState("Atualize suas simulações com os últimos resultados.");
   const [url, setUrl] = useState("/");
   const [loading, setLoading] = useState(false);
+  const [testLoading, setTestLoading] = useState(false);
   const [result, setResult] = useState<any>(null);
 
   if (!isLoaded) return <div className="p-10 text-white flex justify-center">Carregando...</div>;
@@ -36,7 +40,7 @@ export default function AdminPushPage() {
           message: res.message 
         });
       } else {
-        setResult({ success: true, data: res });
+        setResult({ success: true, isTest: false, data: res });
       }
     } catch (err: any) {
       setResult({ success: false, error: "UNKNOWN_ERROR", message: err.message });
@@ -45,123 +49,158 @@ export default function AdminPushPage() {
     }
   };
 
+  const handleSendTest = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (!user) return;
+    setTestLoading(true);
+    setResult(null);
+    try {
+      const res = await sendTestNotification({ 
+        userId: user.id, 
+        title: `[TESTE] ${title}`, 
+        body, 
+        url 
+      });
+      if (res && res.success === false) {
+        setResult({ 
+          success: false, 
+          error: res.error, 
+          message: res.message 
+        });
+      } else {
+        setResult({ success: true, isTest: true, data: res });
+      }
+    } catch (err: any) {
+      setResult({ success: false, error: "UNKNOWN_ERROR", message: err.message });
+    } finally {
+      setTestLoading(false);
+    }
+  };
+
   return (
-    <div className="max-w-2xl mx-auto p-6 mt-4 md:mt-10 bg-zinc-900 border border-zinc-800 rounded-xl shadow-2xl">
-      <h1 className="text-2xl font-bold text-white mb-2">Painel Admin - Notificações Push</h1>
-      <p className="text-zinc-400 mb-6 text-sm">Somente leonardohs.fausto@gmail.com pode acessar esta área.</p>
+    <div className="max-w-2xl mx-auto p-6 mt-4 md:mt-10 bg-zinc-900 border border-zinc-800 rounded-xl shadow-2xl space-y-6">
+      {/* Botão de Voltar para o Painel */}
+      <Link 
+        href="/admin"
+        className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-widest text-zinc-500 hover:text-white transition-colors group select-none cursor-pointer"
+      >
+        <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
+        Voltar para o Painel
+      </Link>
+
+      <div>
+        <h1 className="text-2xl font-bold text-white mb-1 flex items-center gap-2.5">
+          <Bell className="w-6 h-6 text-blue-500 animate-pulse" />
+          Painel Admin - Notificações Push
+        </h1>
+        <p className="text-zinc-400 text-xs">Somente leonardohs.fausto@gmail.com pode acessar esta área.</p>
+      </div>
       
       <form onSubmit={handleSend} className="space-y-5">
         <div>
-          <label className="block text-sm font-medium text-zinc-300 mb-1">Título da Notificação</label>
+          <label className="block text-xs font-black uppercase tracking-widest text-zinc-400 mb-1.5">Título da Notificação</label>
           <input 
             type="text" 
             value={title} 
             onChange={e => setTitle(e.target.value)} 
-            className="w-full bg-zinc-950 border border-zinc-800 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 rounded-lg p-3 text-white outline-none transition-all"
+            className="w-full bg-zinc-950 border border-zinc-800 focus:border-blue-500 rounded-lg p-3 text-white outline-none transition-all text-sm font-semibold"
             required
             placeholder="Ex: Novo Jogo Adicionado!"
           />
         </div>
         
         <div>
-          <label className="block text-sm font-medium text-zinc-300 mb-1">Mensagem</label>
+          <label className="block text-xs font-black uppercase tracking-widest text-zinc-400 mb-1.5">Mensagem</label>
           <textarea 
             value={body} 
             onChange={e => setBody(e.target.value)} 
-            className="w-full bg-zinc-950 border border-zinc-800 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 rounded-lg p-3 text-white h-28 outline-none transition-all resize-none"
+            className="w-full bg-zinc-950 border border-zinc-800 focus:border-blue-500 rounded-lg p-3 text-white h-24 outline-none transition-all resize-none text-sm font-semibold leading-normal"
             required
             placeholder="Ex: O Brasil joga hoje às 16h, não esqueça de palpitar!"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-zinc-300 mb-1">URL de Destino ao Clicar</label>
+          <label className="block text-xs font-black uppercase tracking-widest text-zinc-400 mb-1.5">URL de Destino ao Clicar</label>
           <input 
             type="text" 
             value={url} 
             onChange={e => setUrl(e.target.value)} 
-            className="w-full bg-zinc-950 border border-zinc-800 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 rounded-lg p-3 text-white outline-none transition-all"
+            className="w-full bg-zinc-950 border border-zinc-800 focus:border-blue-500 rounded-lg p-3 text-white outline-none transition-all text-sm font-mono"
             placeholder="Ex: /estatisticas ou /"
           />
         </div>
 
-        <button 
-          type="submit" 
-          disabled={loading}
-          className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-medium py-3 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-        >
-          {loading ? (
-            <>
-              <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
-              Enviando...
-            </>
-          ) : (
-            <>
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-              </svg>
-              Enviar Notificação para Todos
-            </>
-          )}
-        </button>
+        <div className="flex flex-col sm:flex-row gap-3 pt-2">
+          <button 
+            type="button"
+            onClick={handleSendTest}
+            disabled={loading || testLoading}
+            className="flex-1 bg-zinc-800/80 hover:bg-zinc-700 border border-zinc-700/80 text-white font-bold text-xs uppercase tracking-widest py-3 px-4 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-black/20"
+          >
+            <User className="w-4 h-4 text-zinc-400" />
+            {testLoading ? "Enviando Teste..." : "Teste (Apenas p/ Mim)"}
+          </button>
+
+          <button 
+            type="submit" 
+            disabled={loading || testLoading}
+            className="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs uppercase tracking-widest py-3 px-4 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-emerald-950/20"
+          >
+            <Send className="w-4 h-4" />
+            {loading ? "Enviando Todos..." : "Enviar p/ Todos"}
+          </button>
+        </div>
       </form>
 
       {result && (
-        <div className={`mt-6 p-5 rounded-lg flex flex-col gap-3 border ${result.success ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400" : "bg-red-500/10 border-red-500/20 text-red-400"}`}>
+        <div className={`p-5 rounded-xl border flex flex-col gap-3 backdrop-blur-md transition-all ${
+          result.success 
+            ? "bg-emerald-500/5 border-emerald-500/20 text-emerald-400" 
+            : "bg-red-500/5 border-red-500/20 text-red-400"
+        }`}>
           <div className="flex items-start gap-3">
             {result.success ? (
-              <>
-                <svg className="w-5 h-5 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              <div className="p-1.5 bg-emerald-500/10 border border-emerald-500/20 rounded-lg text-emerald-400 shrink-0">
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
                 </svg>
-                <div>
-                  <p className="font-bold text-white text-base">Notificações enviadas!</p>
-                  <p className="text-sm opacity-90 mt-1">
-                    Enviadas com sucesso: <span className="font-extrabold text-white">{result.data?.successCount}</span> <br/>
-                    Falhas (inscrições limpas): <span className="font-extrabold text-white">{result.data?.failCount}</span>
-                  </p>
-                </div>
-              </>
+              </div>
             ) : (
-              <>
-                <svg className="w-5 h-5 mt-0.5 shrink-0 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <div className="p-1.5 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 shrink-0">
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
                 </svg>
-                <div>
-                  <p className="font-bold text-white text-base">Falha na Operação</p>
-                  <p className="text-sm opacity-95 mt-1 leading-relaxed">
-                    {result.message || "Erro desconhecido ao tentar enviar a notificação."}
-                  </p>
-                </div>
-              </>
+              </div>
             )}
-          </div>
-
-          {!result.success && result.error === "VAPID_KEYS_NOT_CONFIGURED" && (
-            <div className="mt-3 p-4 bg-black/40 border border-red-500/20 rounded-lg text-xs space-y-3">
-              <p className="font-bold text-zinc-200">Como configurar as chaves VAPID no ambiente do seu Convex:</p>
+            
+            <div>
+              <p className="font-bold text-white text-sm">
+                {result.success 
+                  ? (result.isTest ? "Notificação de teste disparada!" : "Notificações gerais entregues!")
+                  : "Falha no envio da notificação"
+                }
+              </p>
               
-              <div className="space-y-1">
-                <span className="text-[10px] uppercase font-bold text-zinc-400">Opção 1: Pelo terminal local (CMD do Windows)</span>
-                <pre className="bg-zinc-950 p-2.5 rounded font-mono text-[10px] text-zinc-300 select-all overflow-x-auto block">
-                  cmd /c "npx convex env set NEXT_PUBLIC_VAPID_PUBLIC_KEY BKFP5-izjXIE5iTKadFU-43uxoc9ySKsp111xLIcs_PxkgA_dWSjKyoAd-Pb2lECsqaI4tfty5ySbSfpH4Co3hQ"{"\n"}
-                  cmd /c "npx convex env set VAPID_PRIVATE_KEY NyH8N31w-b0A2qQAB6xdNwfBbLSoJX1VQOceEg7iIwo"
-                </pre>
-              </div>
-
-              <div className="space-y-1 pt-1 border-t border-zinc-800">
-                <span className="text-[10px] uppercase font-bold text-zinc-400">Opção 2: Pelo painel web do Convex (Recomendado para Produção)</span>
-                <ol className="list-decimal list-inside text-zinc-400 space-y-1">
-                  <li>Acesse o <a href="https://dashboard.convex.dev" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:underline">Dashboard do Convex</a>.</li>
-                  <li>Selecione o seu projeto e vá em <strong className="text-zinc-300">Settings &gt; Environment Variables</strong>.</li>
-                  <li>Adicione as duas variáveis copiadas do seu <code className="text-zinc-300 font-mono">.env.local</code>.</li>
-                </ol>
-              </div>
+              {result.success ? (
+                <div className="text-xs text-zinc-300 mt-2 space-y-1">
+                  <p>Inscrições ativas notificadas com sucesso: <strong className="text-white font-black text-sm">{result.data?.successCount}</strong></p>
+                  {!result.isTest && (
+                    <p>Inscrições limpas (tokens inválidos): <strong className="text-white font-black text-sm">{result.data?.failCount}</strong></p>
+                  )}
+                  {result.isTest && result.data?.successCount === 0 && (
+                    <div className="mt-3 p-3 bg-amber-500/10 border border-amber-500/20 rounded-lg text-amber-400 text-[10px] font-semibold leading-normal">
+                      ⚠️ DICA IMPORTANTE: Você não recebeu o teste porque seu navegador atual ainda não se inscreveu nas notificações! Vá para a página inicial e ative as notificações no botão correspondente para habilitar seu dispositivo.
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <p className="text-xs text-zinc-400 mt-1 leading-normal">
+                  Erro: {result.message}
+                </p>
+              )}
             </div>
-          )}
+          </div>
         </div>
       )}
     </div>

@@ -66,3 +66,57 @@ export const sendNotificationToAll = action({
     return { success: true, successCount, failCount };
   },
 });
+
+export const sendNotificationToUser = action({
+  args: {
+    userId: v.string(),
+    title: v.string(),
+    body: v.string(),
+    url: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    if (!process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || !process.env.VAPID_PRIVATE_KEY) {
+      return { 
+        success: false, 
+        error: "VAPID_KEYS_NOT_CONFIGURED",
+        message: "As chaves VAPID não estão configuradas no ambiente do Convex."
+      };
+    }
+
+    const subs = await ctx.runQuery(internal.push.getUserSubscriptions, { userId: args.userId });
+    
+    let successCount = 0;
+    let failCount = 0;
+
+    const payload = JSON.stringify({
+      title: args.title,
+      body: args.body,
+      url: args.url || "/",
+    });
+
+    for (const sub of subs) {
+      try {
+        await webpush.sendNotification(
+          {
+            endpoint: sub.endpoint,
+            keys: {
+              p256dh: sub.keys.p256dh,
+              auth: sub.keys.auth,
+            },
+          },
+          payload
+        );
+        successCount++;
+      } catch (err: any) {
+        console.error("Falha ao enviar push de teste para", sub.endpoint, err);
+        if (err.statusCode === 410 || err.statusCode === 404) {
+          await ctx.runMutation(internal.push.internalRemoveSubscription, { endpoint: sub.endpoint });
+        }
+        failCount++;
+      }
+    }
+
+    return { success: true, successCount, failCount };
+  },
+});
+

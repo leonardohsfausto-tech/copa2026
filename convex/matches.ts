@@ -93,7 +93,7 @@ export const updateScore = mutation({
   },
 });
 
-async function recalculateStandings(ctx: any, group: string, userId: string) {
+export async function recalculateStandings(ctx: any, group: string, userId: string) {
   const teams = await ctx.db.query("teams")
     .withIndex("by_user", (q: any) => q.eq("userId", userId))
     .filter((q: any) => q.eq(q.field("group"), group)).collect();
@@ -194,7 +194,7 @@ async function recalculateStandings(ctx: any, group: string, userId: string) {
   }
 }
 
-async function checkAndPopulateR32(ctx: any, userId: string) {
+export async function checkAndPopulateR32(ctx: any, userId: string) {
   const allGroupMatches = await ctx.db.query("matches")
     .withIndex("by_user", (q: any) => q.eq("userId", userId))
     .filter((q: any) => q.eq(q.field("phase"), "Group")).collect();
@@ -284,7 +284,7 @@ async function checkAndPopulateR32(ctx: any, userId: string) {
   }
 }
 
-async function propagateWinner(ctx: any, finishedMatch: any, userId: string) {
+export async function propagateWinner(ctx: any, finishedMatch: any, userId: string) {
   if (finishedMatch.status !== "encerrado" || !finishedMatch.winnerId) return;
 
   const allMatches = await ctx.db.query("matches")

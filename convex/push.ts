@@ -71,3 +71,15 @@ export const internalRemoveSubscription = internalMutation({
     }
   },
 });
+
+// Query interna para buscar as inscrições de um usuário específico
+export const getUserSubscriptions = internalQuery({
+  args: { userId: v.string() },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query("push_subscriptions")
+      .withIndex("by_user", (q) => q.eq("userId", args.userId))
+      .collect();
+  },
+});
+

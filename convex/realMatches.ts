@@ -10,7 +10,12 @@ export const syncRealMatches = internalAction({
 
     const apiKey = process.env.API_FOOTBALL_KEY;
     if (!apiKey) {
-      console.error("API_FOOTBALL_KEY não encontrada nas variáveis de ambiente do Convex.");
+      const msg = "API_FOOTBALL_KEY não encontrada nas variáveis de ambiente do Convex.";
+      console.error(msg);
+      await ctx.runMutation(internal.realMatches.logSyncAttempt, {
+        status: "erro",
+        message: msg,
+      });
       return;
     }
 
@@ -28,6 +33,10 @@ export const syncRealMatches = internalAction({
       }
 
       const data = await response.json();
+
+      if (!data.response || !Array.isArray(data.response)) {
+        throw new Error("Formato de resposta da API inválido ou sem dados.");
+      }
 
       // Transformar os dados recebidos para o nosso formato interno
       const formattedMatches = data.response.map((fixture: any) => ({
@@ -51,10 +60,22 @@ export const syncRealMatches = internalAction({
       await ctx.runMutation(internal.realMatches.updateGlobalMatches, {
         apiMatchesData: formattedMatches,
       });
+
+      const successMsg = `Sincronização concluída com sucesso. ${formattedMatches.length} jogos processados.`;
+      console.log(successMsg);
       
-      console.log(`Sincronização concluída com sucesso. ${formattedMatches.length} jogos processados.`);
-    } catch (error) {
-      console.error("Falha ao buscar dados da API de resultados:", error);
+      await ctx.runMutation(internal.realMatches.logSyncAttempt, {
+        status: "sucesso",
+        message: successMsg,
+        matchesSynced: formattedMatches.length,
+      });
+    } catch (error: any) {
+      const errMsg = `Falha ao buscar dados da API de resultados: ${error.message || error}`;
+      console.error(errMsg);
+      await ctx.runMutation(internal.realMatches.logSyncAttempt, {
+        status: "erro",
+        message: errMsg,
+      });
     }
   },
 });
@@ -68,6 +89,23 @@ export const triggerManualSync = action({
   },
 });
 
+// Mutation interna para registrar tentativas de sincronização no histórico
+export const logSyncAttempt = internalMutation({
+  args: {
+    status: v.string(),
+    message: v.string(),
+    matchesSynced: v.optional(v.number()),
+  },
+  handler: async (ctx, args) => {
+    await ctx.db.insert("api_sync_logs", {
+      timestamp: Date.now(),
+      status: args.status,
+      message: args.message,
+      matchesSynced: args.matchesSynced,
+    });
+  },
+});
+
 // Mutation interna para atualizar o banco de dados (Perfil Global isolado)
 export const updateGlobalMatches = internalMutation({
   args: {
@@ -76,21 +114,20 @@ export const updateGlobalMatches = internalMutation({
   handler: async (ctx, args) => {
     console.log("Atualizando base isolada do Perfil Global com placares reais...");
 
-    // Buscar todos os times globais para mapear pelo nome
+    // Buscar todos os times globais para mapear pelo nome (userId = "global")
     const globalTeams = await ctx.db.query("teams")
-      .withIndex("by_user", (q) => q.eq("userId", undefined))
+      .withIndex("by_user", (q) => q.eq("userId", "global"))
       .collect();
 
     for (const matchData of args.apiMatchesData) {
-      // Procurar IDs reais dos times pelo nome (pode haver divergências na tradução, 
-      // precisaria de um mapeamento confiável no futuro)
+      // Procurar IDs reais dos times pelo nome (pode haver divergências na tradução)
       const homeTeamDoc = globalTeams.find(t => t.name.toLowerCase() === matchData.homeTeam.toLowerCase());
       const awayTeamDoc = globalTeams.find(t => t.name.toLowerCase() === matchData.awayTeam.toLowerCase());
 
       if (!homeTeamDoc || !awayTeamDoc) continue;
 
       const globalMatches = await ctx.db.query("matches")
-        .withIndex("by_user", (q) => q.eq("userId", undefined))
+        .withIndex("by_user", (q) => q.eq("userId", "global"))
         .collect();
       
       // Assumindo que pegamos a partida que envolve esses dois times
@@ -107,11 +144,12 @@ export const updateGlobalMatches = internalMutation({
           status: matchData.status,
         });
 
-        // 2. Registrar eventos (gols, assistências, cartões) na tabela estruturada
+        // 2. Registrar eventos (gols, assistências, cartões) na tabela estruturada com userId: "global"
         for (const event of matchData.events) {
           const teamId = event.teamName.toLowerCase() === homeTeamDoc.name.toLowerCase() ? targetMatch.homeTeamId : targetMatch.awayTeamId;
           
           await ctx.db.insert("match_events", {
+            userId: "global",
             matchId: targetMatch._id,
             teamId: teamId,
             type: event.type,
@@ -143,11 +181,11 @@ export const getGlobalStats = query({
   args: {},
   handler: async (ctx) => {
     const events = await ctx.db.query("match_events")
-      .withIndex("by_user", (q) => q.eq("userId", undefined))
+      .withIndex("by_user", (q) => q.eq("userId", "global"))
       .collect();
 
     const teams = await ctx.db.query("teams")
-      .withIndex("by_user", (q) => q.eq("userId", undefined))
+      .withIndex("by_user", (q) => q.eq("userId", "global"))
       .collect();
     
     const teamMap: Record<string, any> = {};
