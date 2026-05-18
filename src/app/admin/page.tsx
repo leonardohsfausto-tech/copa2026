@@ -65,7 +65,7 @@ export default async function AdminPage() {
   }
 
   return (
-    <div className="space-y-4 md:space-y-8 pb-20 px-4 md:px-8 max-w-[1800px] pt-6 md:pt-8 bg-background">
+    <div className="space-y-4 md:space-y-8 pb-20 px-4 md:px-8 max-w-[1800px] mx-auto pt-6 md:pt-8 bg-background">
       <AdminDashboard 
         totalClerkUsers={totalUsers} 
         newUsersToday={newUsersToday} 

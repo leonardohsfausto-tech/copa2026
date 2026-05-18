@@ -33,7 +33,7 @@ export default function GruposPage() {
   }
 
   return (
-    <div className="space-y-4 md:space-y-8 pb-20 px-4 md:px-8 max-w-[1800px]">
+    <div className="space-y-4 md:space-y-8 pb-20 px-4 md:px-8 max-w-[1800px] mx-auto">
 
       {/* SELETOR DE GRUPO COM SETAS */}
       <div className="flex items-center justify-center gap-6 py-6">

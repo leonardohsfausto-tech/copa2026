@@ -45,7 +45,7 @@ export default function CalendarioPage() {
   const prevDay = () => setActiveDateIndex((prev) => (prev - 1 + dates.length) % dates.length);
 
   return (
-    <div className="space-y-4 md:space-y-8 pb-20 px-4 md:px-8 max-w-[1800px]">
+    <div className="space-y-4 md:space-y-8 pb-20 px-4 md:px-8 max-w-[1800px] mx-auto">
       
       {/* PAGINAÇÃO COMPACTA */}
       <div className="flex items-center justify-center gap-6 py-6">
