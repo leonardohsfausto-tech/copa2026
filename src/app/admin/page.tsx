@@ -65,14 +65,12 @@ export default async function AdminPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] pt-8 pb-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto">
-        <AdminDashboard 
-          totalClerkUsers={totalUsers} 
-          newUsersToday={newUsersToday} 
-          users={serializedUsers}
-        />
-      </div>
+    <div className="space-y-4 md:space-y-8 pb-20 px-4 md:px-8 max-w-[1800px] pt-6 md:pt-8 bg-background">
+      <AdminDashboard 
+        totalClerkUsers={totalUsers} 
+        newUsersToday={newUsersToday} 
+        users={serializedUsers}
+      />
     </div>
   );
 }
