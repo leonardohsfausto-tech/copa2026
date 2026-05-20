@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { LayoutGrid, CalendarDays, Trophy, Database, AlertTriangle, Loader2, CheckCircle2, User, BarChart2, Shield } from "lucide-react";
+import { LayoutGrid, CalendarDays, Trophy, Database, AlertTriangle, Loader2, CheckCircle2, User, Shield } from "lucide-react";
 import { SignInButton, SignUpButton, SignedIn, SignedOut, UserButton, useUser } from "@clerk/nextjs";
 import { useState } from "react";
 import { useMutation } from "convex/react";
@@ -29,7 +29,6 @@ export function TopNav() {
     { icon: LayoutGrid, label: "Grupos", href: "/grupos" },
     { icon: CalendarDays, label: "Jogos", href: "/calendario" },
     { icon: Trophy, label: "Mata-Mata", href: "/mata-mata" },
-    { icon: BarChart2, label: "Estatísticas", href: "/estatisticas" },
   ];
 
   return (

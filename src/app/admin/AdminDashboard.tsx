@@ -31,22 +31,17 @@ export default function AdminDashboard({ totalClerkUsers, newUsersToday, users =
   const adminStats = useQuery(api.admin.getAdminStats);
   const adminUsersDetails = useQuery(api.admin.getAdminUsersDetails);
   const globalMatches = useQuery(api.admin.getGlobalMatches);
-  const syncLogs = useQuery(api.admin.getSyncLogs, {});
-  
-  const triggerSync = useAction(api.realMatches.triggerManualSync);
   const updateGlobalScore = useMutation(api.admin.updateGlobalMatchScore);
 
   // Tab State
-  const [activeTab, setActiveTab] = useState<"overview" | "matches" | "users" | "logs">("overview");
+  const [activeTab, setActiveTab] = useState<"overview" | "matches" | "users">("overview");
 
   // Search States
   const [searchTerm, setSearchTerm] = useState("");
   const [matchSearchTerm, setMatchSearchTerm] = useState("");
   const [matchPhaseFilter, setMatchPhaseFilter] = useState("all");
 
-  // Sync States
-  const [isSyncing, setIsSyncing] = useState(false);
-  const [syncMessage, setSyncMessage] = useState<string | null>(null);
+
 
   // Manual Editing States (Fallback Panel)
   const [editingMatchId, setEditingMatchId] = useState<string | null>(null);
@@ -63,20 +58,7 @@ export default function AdminDashboard({ totalClerkUsers, newUsersToday, users =
   const [isSavingScore, setIsSavingScore] = useState(false);
   const [saveScoreMessage, setSaveScoreMessage] = useState<string | null>(null);
 
-  // Trigger manual API fetch
-  const handleManualSync = async () => {
-    setIsSyncing(true);
-    setSyncMessage(null);
-    try {
-      await triggerSync({});
-      setSyncMessage("✅ Sincronização concluída com sucesso!");
-    } catch (err) {
-      setSyncMessage("❌ Erro ao sincronizar. Verifique a chave da API.");
-    } finally {
-      setIsSyncing(false);
-      setTimeout(() => setSyncMessage(null), 6000);
-    }
-  };
+
 
   // Editing a global match (CMS Fallback)
   const startEditingMatch = (match: any) => {
@@ -224,15 +206,6 @@ export default function AdminDashboard({ totalClerkUsers, newUsersToday, users =
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
-          <button
-            onClick={handleManualSync}
-            disabled={isSyncing}
-            className="bg-emerald-600 hover:bg-emerald-500 disabled:opacity-60 disabled:cursor-not-allowed text-white text-xs font-bold py-2.5 px-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg shadow-emerald-950/20"
-          >
-            <RefreshCw className={`w-4 h-4 ${isSyncing ? 'animate-spin' : ''}`} />
-            {isSyncing ? 'Buscando API...' : 'Forçar Sync da API'}
-          </button>
-
           <Link
             href="/admin/push"
             className="bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold py-2.5 px-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg shadow-blue-950/20"
@@ -306,15 +279,7 @@ export default function AdminDashboard({ totalClerkUsers, newUsersToday, users =
         </Card>
       </div>
 
-      {syncMessage && (
-        <div className={`px-4 py-3.5 rounded-xl text-sm font-semibold border ${
-          syncMessage.startsWith('✅')
-            ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
-            : 'bg-red-500/10 border-red-500/30 text-red-400'
-        }`}>
-          {syncMessage}
-        </div>
-      )}
+
 
       {/* Tabs Administrativas */}
       <div className="flex border-b border-zinc-800 overflow-x-auto gap-2">
@@ -348,16 +313,7 @@ export default function AdminDashboard({ totalClerkUsers, newUsersToday, users =
         >
           👥 Usuários Registrados
         </button>
-        <button
-          onClick={() => setActiveTab("logs")}
-          className={`py-3 px-4 font-black uppercase tracking-widest text-[10px] transition-colors border-b-2 whitespace-nowrap ${
-            activeTab === "logs" 
-              ? "border-blue-500 text-white" 
-              : "border-transparent text-zinc-400 hover:text-white"
-          }`}
-        >
-          🔌 Histórico de Sync
-        </button>
+
       </div>
 
       {/* TAB 1: VISÃO GERAL & SAAS GROWTH */}
@@ -894,65 +850,7 @@ export default function AdminDashboard({ totalClerkUsers, newUsersToday, users =
         </div>
       )}
 
-      {/* TAB 4: HISTÓRICO DE SYNCS */}
-      {activeTab === "logs" && (
-        <div className="bg-zinc-900/40 border border-zinc-800/80 rounded-2xl p-6 backdrop-blur-md shadow-xl">
-          <div>
-            <h2 className="text-lg font-bold text-white flex items-center gap-2 mb-1">
-              <Database className="w-5 h-5 text-blue-500" />
-              Histórico de Sincronizações
-            </h2>
-            <p className="text-zinc-400 text-xs mb-6 pb-4 border-b border-zinc-800">
-              Auditorias de execuções automatizadas e acionamentos manuais da API de resultados esportivos externos.
-            </p>
-          </div>
 
-          <div className="space-y-4">
-            {syncLogs && syncLogs.length > 0 ? (
-              syncLogs.map((log) => (
-                <div 
-                  key={log._id} 
-                  className={`p-4 rounded-xl border flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs backdrop-blur-md transition-all ${
-                    log.status === "sucesso" 
-                      ? 'bg-emerald-500/5 border-emerald-500/10 text-zinc-300 hover:border-emerald-500/20' 
-                      : 'bg-red-500/5 border-red-500/10 text-zinc-300 hover:border-red-500/20'
-                  }`}
-                >
-                  <div className="flex items-start gap-3">
-                    {log.status === "sucesso" ? (
-                      <div className="p-1.5 bg-emerald-500/10 border border-emerald-500/20 rounded-lg text-emerald-400 shrink-0">
-                        <Check className="w-4 h-4" />
-                      </div>
-                    ) : (
-                      <div className="p-1.5 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 shrink-0">
-                        <AlertTriangle className="w-4 h-4" />
-                      </div>
-                    )}
-                    
-                    <div className="space-y-1">
-                      <p className="font-bold text-white">{log.message}</p>
-                      {log.matchesSynced !== undefined && (
-                        <p className="text-zinc-500 text-[10px] font-medium uppercase tracking-wider">
-                          Partidas Processadas: <span className="font-black text-zinc-300">{log.matchesSynced}</span>
-                        </p>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-1.5 text-zinc-500 shrink-0 select-none">
-                    <Clock className="w-3.5 h-3.5" />
-                    {formatDate(log.timestamp)}
-                  </div>
-                </div>
-              ))
-            ) : (
-              <div className="text-center py-10 text-zinc-500 text-xs">
-                Nenhum log de sincronização registrado até o momento. Execute a sincronização manual acima para gerar o primeiro registro.
-              </div>
-            )}
-          </div>
-        </div>
-      )}
     </div>
   );
 }
